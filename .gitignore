@@ -1,0 +1,9 @@
+*~
+*.orig
+*.pyc
+*.pyo
+*.rej
+*.swp
+__minitage__*
+data/logs
+data/media
