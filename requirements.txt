@@ -1,5 +1,4 @@
-Django==1.5.0
-South
+Django
 boto
 django-avatar
 django-classy-mail
