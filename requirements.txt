@@ -1,5 +1,6 @@
-Django
+Django==1.5.0
 South
+boto
 django-avatar
 django-classy-mail
 django-compressor
@@ -8,11 +9,20 @@ django-frontend-skeleton
 django-mailbox
 django-ses
 django-storages
+django-taggit
 django-telemetry
 django-zurb-foundation
+email_reply_parser
 gunicorn
 markdown
-mysql-python
+# For dev we can use SQLLite.  Uncomment the one you really want for production
+#mysql-python
+#psycopg2
 python-social-auth
 pyzmail
 sphinx
+dj-database-url
+django-allauth
+-e git://github.com/djibon/django-invitation.git#egg=django-invitation
+django-picklefield
+

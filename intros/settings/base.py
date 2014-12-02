@@ -3,8 +3,15 @@
 
 import os
 import sys
+import dj_database_url
 
-PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
+import  django.conf.global_settings as DEFAULT_SETTINGS
+CURRENT_DIR     = os.path.dirname(__file__)
+ENV_PATH        = os.path.abspath("%s/../../" % CURRENT_DIR)
+PROJECT_ROOT    = os.path.abspath("%s/../../" % CURRENT_DIR)
+
+#PROJECT_ROOT = os.path.join(os.path.dirname(__file__))
+#PROJECT_ROOT = os.path.abspath(os.path.dirname(__name__)) #$os.path.join(os.path.dirname(__file__), '..', '..')
 
 # Modify sys.path to include the lib directory
 sys.path.append(os.path.join(PROJECT_ROOT, "lib"))
@@ -18,16 +25,27 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'intros',
-        'USER': 'intros',
-        'PASSWORD': 'intros',
-        'HOST': 'mysql',  # Set to empty string for localhost.
-        'PORT': '',  # Set to empty string for default.
-    }
-}
+# Use environment variables for cool stuff, or hardcode them if that's more your style
+
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", False)
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", False)
+AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME", "us-east-1")
+AWS_SES_REGION_ENDPOINT = os.environ.get("AWS_SES_REGION_ENDPOINT", "email.%s.amazonaws.com" % AWS_SES_REGION_NAME)
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "")
+AWS_CALLING_FORMAT = os.environ.get("AWS_CALLING_FORMAT", "")
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'intros',
+#        'USER': 'intros',
+#        'PASSWORD': 'intros',
+#        'HOST': '',  # Set to empty string for localhost.
+#        'PORT': '',  # Set to empty string for default.
+#    }
+#}
+
+DATABASES = {'default': dj_database_url.config(default='sqlite:///%s' % os.path.join(PROJECT_ROOT, 'intros.sqlite'))}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -36,7 +54,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'GMT'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -68,7 +86,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'data','static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -92,7 +110,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'fz.[/`9@0K>JkVh8-#^@%![r<EPRbX:_9H,L6W(%I8}a-&?uF=$"79p$M@'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -109,7 +127,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+#    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'intros.urls'
@@ -134,26 +152,35 @@ INSTALLED_APPS = (
 
     'classy_mail',
     'compressor',
-    'debug_toolbar',
+#    'debug_toolbar',
     'django_mailbox',
     'django_ses',
+    'djcelery',
     'djfrontend',
     'djfrontend.skeleton',
     'foundation',
     'social.apps.django_app.default',
     'south',
     'storages',
+    'taggit',
+
+    'introductions',
 
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'invitation'
 )
 
-AUTHENTICATION_BACKENDS = ( 'social.backends.google.GoogleOAuth2',
-    'social.backends.twitter.TwitterOAuth',
+AUTHENTICATION_BACKENDS = (
+    'social.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 EMAIL_SUBJECT_PREFIX = '[intros] '
@@ -161,9 +188,9 @@ EMAIL_SUBJECT_PREFIX = '[intros] '
 INTERNAL_IPS = ('127.0.0.1', '10.0.2.2')
 
 # django-debug-toolbar settings
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
-}
+#DEBUG_TOOLBAR_CONFIG = {
+#    'INTERCEPT_REDIRECTS': False,
+#}
 
 THUMBS_GENERATE_ANY_SIZE = True
 
@@ -171,11 +198,21 @@ THUMBS_GENERATE_ANY_SIZE = True
 EMAIL_BACKEND = 'django_ses.SESBackend'
 
 #Django-Storages
-DEFAULT_FILE_STORAGE = 'libs.storages.backends.overwrite.OverwriteStorage'
-STATICFILES_STORAGE = 'storages.backends.overwrite.OverwriteStorage'
+DEFAULT_FILE_STORAGE = 'libs.storages.S3Storage.S3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 PATH_DATA = os.path.join(PROJECT_ROOT, 'data')
 PATH_LOG = os.path.join(PATH_DATA, 'logs')
+
+
+if not os.path.exists(PATH_LOG):
+    os.makedirs(PATH_LOG)
+
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+    'django.core.context_processors.request',
+    "allauth.account.context_processors.account",
+    "allauth.socialaccount.context_processors.socialaccount",
+)
 
 LOGGING = {
     'version': 1,
@@ -245,3 +282,34 @@ LOGGING = {
         'propagate': True
     },
 }
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'introductions.pipeline.save_mailbox',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
+)
+FIXTURE_DIRS = 'fixtures/'
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/account/login'
+LOGOUT_URL = '/account/logout'
+
+#don't change it, its our default to use allauth django application.
+INVITATION_USE_ALLAUTH=True
+
+#Invitation expired days
+ACCOUNT_INVITATION_DAYS=10
+
+#Total invitation per user
+INVITATIONS_PER_USER=5
+
+# Change to false if application accept a new registration
+INVITE_MODE=True
+
+ACCOUNT_ADAPTER = "intros.accountadapter.AccountAdapter"

@@ -15,8 +15,14 @@ urlpatterns = patterns(
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/django-ses/', include('django_ses.urls')),
-    url('', include('social.apps.django_app.urls', namespace='social'))
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^account/logout/$', 'django.contrib.auth.views.logout', 
+        {'next_page': '/'}, name="logout"),
+    url(r'^account/', include('allauth.urls')),
+    url(r'^invitation/', include('invitation.urls')),
+    url('', include('social.apps.django_app.urls', namespace='social')),
 
+    url('', include('introductions.urls', namespace='introductions')),
 )
 
 if settings.DEBUG:
