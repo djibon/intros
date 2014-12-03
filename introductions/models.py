@@ -256,3 +256,10 @@ def process_message(sender, message, **args):
         else:
             print  "Ignore introduction"
 
+
+@receiver(post_save, sender=User)
+def create_person(sender, **kwargs):
+    if kwargs.get('created', False):
+        user = kwargs.get('instance')
+        Person.objects.create(user=user, preferred_email_address=user.email)
+

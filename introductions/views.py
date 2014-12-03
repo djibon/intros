@@ -1,4 +1,5 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils.decorators import method_decorator
 
 from django.views.generic import (CreateView,
     DetailView,
@@ -19,6 +20,11 @@ from django_mailbox.models import (
     Mailbox,
 )
 
+class SuperuserRequiredMixin(object):
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, *args, **kwargs):
+        return super(SuperuserRequiredMixin, self).dispatch(*args, **kwargs)
+
 class LoginRequiredMixin(object):
     @classmethod
     def as_view(cls, **initkwargs):
@@ -28,7 +34,7 @@ class LoginRequiredMixin(object):
 class IntroductionView(LoginRequiredMixin, TemplateView):
     template_name = "introductions/home.html"
 
-class MailboxListView(LoginRequiredMixin, ListView):
+class MailboxListView(LoginRequiredMixin, SuperuserRequiredMixin, ListView):
     model = Mailbox
     template_name = "introductions/mailbox_list.html"
     paginate_by = 2
