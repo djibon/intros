@@ -22,7 +22,7 @@
 {% if object_list %}
 {% for object in object_list %}
     {# Each "contact" is a Contact model object. #}
-    <p><a href="{% url 'introductions:introduction_detail' object.id %}">{{ object }}</a></p>
+    <p><a href="{% url 'introductions:mailbox_detail' object.id %}">{{ object }}</a></p>
 {% endfor %}
 {% else %}
     <h2 class="text-center">You have no mailbox</h2>
