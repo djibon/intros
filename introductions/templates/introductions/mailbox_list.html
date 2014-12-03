@@ -27,6 +27,7 @@
 {% else %}
     <h2 class="text-center">You have no mailbox</h2>
 {% endif %}
+    <p>Create a new <a href="{% url 'introductions:mailbox_create' %}">mailbox</p>
 </div>
 
 {% if is_paginated %}
