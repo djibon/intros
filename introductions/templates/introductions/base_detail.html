@@ -1,20 +1,28 @@
 {% extends 'djfrontend/base.html' %}
+{% load djfrontend %}
+{% block head_css %}
+{% djfrontend_normalize %}
+{% djfrontend_twbs_css %}
+{% endblock %}
+{% block title %}Intros :: Introduction Detail {% endblock %}
+
 {% block body_content %}
 {% include 'partials/header.html' %}
     {% block inner_content %}
 <div class="container">
-
-  <div class="starter-template">
-    <h1>Bootstrap starter template</h1>
-    <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-  </div>
+  <header class="jumbotron subhead">
+    <div class="starter-template">
+      <h1>Introduction Detail</h1>
+    </div>
+  </header>
+  
   <div>
-      object = {{ object }}
+      {{ object }}
   </div>
-
+  
 </div><!-- /.container -->
     {% endblock %}
-    <footer class="footer">
+    <footer class="foolter">
         <p class="pull-right"><a href="#">Back to top</a></p>
         <p>Built with love in Nicaragua by <a href="http://twitter.com/alexlovelltroy" target="_blank">@alexlovelltroy</a>.</p>
       </footer>

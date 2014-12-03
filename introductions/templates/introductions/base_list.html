@@ -4,23 +4,26 @@
 {% djfrontend_normalize %}
 {% djfrontend_twbs_css %}
 {% endblock %}
-
+{% block title %}Intros :: Introduction List {% endblock %}
 {% block body_content %}
 {% include 'partials/header.html' %}
     {% block inner_content %}
 <div class="container">
 <header class="jumbotron subhead">
   <div class="starter-template">
-    <h1>Bootstrap starter template</h1>
+    <h1>Introductions List</h1>
     </div>
 </header>
-    <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-  <div>
+<div>
 
+{% if object_list %}
 {% for object in object_list %}
     {# Each "contact" is a Contact model object. #}
-    <p>{{ object }}</p>
+    <p><a href="{% url 'introductions:introduction_detail' object.id %}">{{ object }}</a></p>
 {% endfor %}
+{% else %}
+    <h2 class="text-center">You have no introductions</h2>
+{% endif %}
 </div>
 
 {% if is_paginated %}

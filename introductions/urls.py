@@ -33,7 +33,7 @@ from introductions.views import (
 )
 
 urlpatterns = [
-    url(r'^$', IntroductionView.as_view(), name="home"),
+    url(r'^$', IntroductionListView.as_view(), name="home"),
     url(r'^introduction/$', IntroductionCreateView.as_view(), name="introduction_create"),
     url(r'^introduction/(?P<pk>[0-9]+)/$', IntroductionDetailView.as_view(), name="introduction_detail"),
     url(r'^introductions/$', IntroductionListView.as_view(), name="introduction_list"),
