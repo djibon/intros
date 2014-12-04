@@ -24,4 +24,4 @@ dj-database-url
 django-allauth
 -e git://github.com/djibon/django-invitation.git#egg=django-invitation
 django-picklefield
-
+celery
